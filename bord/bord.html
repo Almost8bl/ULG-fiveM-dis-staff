@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULG FiveM - لوحة التحكم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="bord.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-mode">
+
+    <div id="login-page">
+        <div class="login-container">
+            <button class="back-btn" onclick="window.location.href='../index.html'">العودة</button>
+            <h1>تسجيل الدخول - ULG FiveM</h1>
+            <p>الرجاء استخدام اسم المستخدم الذي تم تزويدك به.</p>
+            <form id="login-form">
+                <input type="text" id="login-name" placeholder="ادخل اسم المستخدم الخاص بك" required>
+                <button type="submit" class="btn primary-btn">تسجيل الدخول</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-wrapper" class="hidden">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <button class="back-btn" onclick="window.location.href='../index.html'">العودة</button>
+                <div class="sidebar-header">
+                    <h2>ULG FiveM</h2>
+                    <p id="welcome-message"></p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#dashboard" class="nav-item active" data-section="dashboard"><span class="icon">📊</span> <span>الرئيسية</span></a>
+                    <a href="#tasks" class="nav-item" data-section="tasks"><span class="icon">📋</span> <span>إدارة المهام</span></a>
+                    <a href="#notifications" class="nav-item" data-section="notifications"><span class="icon">🔔</span> <span>التنبيهات</span></a>
+                    <a href="#members" class="nav-item" data-section="members"><span class="icon">👥</span> <span>مركز الأعضاء</span></a>
+                    <a href="#log" class="nav-item" data-section="log"><span class="icon">📜</span> <span>سجل الأحداث</span></a>
+                    <a href="#database_section" class="nav-item" data-section="database_section" id="nav-database"><span class="icon">🗃️</span> <span>قاعدة البيانات</span></a>
+                    <a href="#settings" class="nav-item" data-section="settings"><span class="icon">⚙️</span> <span>الإعدادات</span></a>
+                </nav>
+                <button id="logout-btn" class="btn danger-btn">تسجيل الخروج</button>
+            </aside>
+
+            <main class="main-content">
+                <section id="dashboard" class="content-section active">
+                    <header class="section-header">
+                        <h1>اللوحة الرئيسية</h1>
+                        <div id="clock" class="clock"></div>
+                    </header>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>المسؤولين المتصلين</h3>
+                            <p id="online-admins-count">1</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>إجمالي المهام</h3>
+                            <p id="total-tasks-count">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>إجمالي التنبيهات</h3>
+                            <p id="total-notifications-count">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>إجمالي الأعضاء</h3>
+                            <p id="total-members-count">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-messages">
+                        <div class="message-card info">
+                            <h4>أهلاً بك في لوحة تحكم ULG FiveM!</h4>
+                            <p>استكشف الأقسام المختلفة لإدارة المهام، التنبيهات، والأعضاء بكفاءة.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="database_section" class="content-section">
+                    <header class="section-header"><h1>إدارة قاعدة البيانات (المستخدمين)</h1></header>
+                    <div class="db-container">
+                        <div class="db-card">
+                            <h3>إنشاء مستخدم جديد</h3>
+                            <form id="create-user-form">
+                                <input type="text" id="new-user-name" placeholder="اسم المستخدم الجديد" required>
+                                <select id="new-user-role" required>
+                                    <option value="Discord Manager">Discord Manager</option>
+                                    <option value="Vice Manager">Vice Manager</option>
+                                    <option value="Head Moderator">Head Moderator</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                    <option value="Senior Moderator">Senior Moderator</option>
+                                    <option value="Moderator" selected>Moderator</option>
+                                </select>
+                                <button type="submit" class="btn primary-btn">إنشاء المستخدم</button>
+                            </form>
+                        </div>
+                        <div class="db-card">
+                            <h3>قائمة المستخدمين</h3>
+                            <div id="user-management-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tasks" class="content-section">
+                    <header class="section-header"><h1>إدارة المهام</h1><button id="addTaskBtn" class="btn primary-btn">إضافة مهمة جديدة</button></header>
+                    <ul id="task-list" class="task-list"></ul>
+                </section>
+                <section id="notifications" class="content-section">
+                    <header class="section-header"><h1>نظام التنبيهات</h1></header>
+                    <div id="send-notification-wrapper" class="send-notification"><input type="text" id="notification-input" placeholder="اكتب رسالة التنبيه..."><button id="send-notification-btn" class="btn primary-btn">إرسال</button></div>
+                    <ul id="notification-list" class="notification-list"></ul>
+                </section>
+                <section id="members" class="content-section">
+                    <header class="section-header"><h1>مركز الأعضاء</h1></header>
+                    <div id="members-list" class="members-grid"></div>
+                </section>
+                <section id="log" class="content-section">
+                    <header class="section-header"><h1>سجل الأحداث</h1></header>
+                    <div id="log-list-container"><ul id="log-list"></ul></div>
+                </section>
+                <section id="settings" class="content-section">
+                    <header class="section-header"><h1>الإعدادات</h1></header>
+                    <div class="settings-container">
+                        <div class="setting-item"><label>الوضع المظلم</label><button id="theme-toggle" class="btn">تبديل</button></div>
+                        <div class="setting-item"><label>لون الواجهة</label><div class="color-options"><span class="color-box" data-color="#0055aa" style="background: #0055aa;"></span><span class="color-box" data-color="#0077cc" style="background: #0077cc;"></span><span class="color-box" data-color="#3399ff" style="background: #3399ff;"></span></div></div>
+                        <div class="setting-item" id="clear-data-wrapper"><label>مسح بيانات المهام والتنبيهات</label><button id="clear-data-btn" class="btn danger-btn">مسح البيانات</button></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    </div>
+    
+    <div id="taskModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><h2 id="modal-title">إضافة مهمة</h2><form id="task-form"><input type="hidden" id="task-id"><input type="text" id="task-title" placeholder="عنوان المهمة" required><textarea id="task-desc" placeholder="وصف المهمة"></textarea><select id="task-priority" required><option value="high">أولوية عالية</option><option value="medium">متوسطة</option><option value="low">منخفضة</option></select><button type="submit" class="btn primary-btn">حفظ</button></form></div></div>
+    <audio id="notification-sound" src="https://freesound.org/data/previews/4/4185_6-lq.mp3" preload="auto"></audio>
+    <script src="bord.js"></script>
+
+    <div class="developer-info">
+        <p>برمجة بواسطة <span class="developer-name">FUTURE</span> - Senior Web Developer</p>
+    </div>
+
+    
+    </body>
+</html>
+    <div id="taskModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><h2 id="modal-title">إضافة مهمة</h2><form id="task-form"><input type="hidden" id="task-id"><input type="text" id="task-title" placeholder="عنوان المهمة" required><textarea id="task-desc" placeholder="وصف المهمة"></textarea><select id="task-priority" required><option value="high">أولوية عالية</option><option value="medium">متوسطة</option><option value="low">منخفضة</option></select><button type="submit" class="btn primary-btn">حفظ</button></form></div></div>
+    <audio id="notification-sound" src="https://freesound.org/data/previews/4/4185_6-lq.mp3" preload="auto"></audio>
+    <script src="bord.js"></script>
+</body>
+</html>
