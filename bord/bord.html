@@ -12,7 +12,6 @@
 </head>
 <body class="dark-mode">
 
-    <!-- صفحة تسجيل الدخول -->
     <div id="login-page">
         <div class="login-container">
             <button class="back-btn" onclick="window.location.href='../index.html'">العودة</button>
@@ -26,7 +25,6 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم -->
     <div id="dashboard-wrapper" class="hidden">
         <div class="dashboard-container">
             <aside class="sidebar">
@@ -132,7 +130,7 @@
             </main>
         </div>
     </div>
-
+    
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -150,35 +148,10 @@
             </form>
         </div>
     </div>
-
+    
     <audio id="notification-sound" src="https://freesound.org/data/previews/4/4185_6-lq.mp3" preload="auto"></audio>
-
+    
     <script type="module" src="bord.js"></script>
-
-    <script>
-        const allowedUsers = ['future', 'sara', 'moscow'];
-
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('login-name').value.trim().toLowerCase();
-            const errorBox = document.getElementById('login-error');
-
-            if (allowedUsers.includes(usernameInput)) {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('dashboard-wrapper').classList.remove('hidden');
-                document.getElementById('welcome-message').textContent = 'مرحباً، ' + usernameInput;
-                errorBox.textContent = '';
-            } else {
-                errorBox.textContent = 'اسم المستخدم غير صحيح.';
-            }
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            document.getElementById('dashboard-wrapper').classList.add('hidden');
-            document.getElementById('login-page').classList.remove('hidden');
-            document.getElementById('login-name').value = '';
-        });
-    </script>
 
     <div class="developer-info">
         <p>برمجة بواسطة <span class="developer-name">FUTURE</span> - Senior Web Developer</p>
