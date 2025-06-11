@@ -1,20 +1,14 @@
 // bord.js
 
 // استدعاء db من ملف firebase.js
+// هذا الاستدعاء سليم لأنه يشير لملف محلي (./)
 import { db } from './firebase.js';
 
-// استدعاء دوال Firestore اللازمة
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    onSnapshot, // مهم جداً للـ Realtime Updates
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc
-} from "firebase/firestore";
+// استدعاء دوال Firestore اللازمة باستخدام روابط CDN مباشرة
+// تم تحديث هذه الأسطر لتشير إلى مسار URL كامل لمكتبات Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, doc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- تعريف العناصر الأساسية ---
@@ -136,9 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const createUserForm = document.getElementById('create-user-form');
         const userManagementList = document.getElementById('user-management-list');
 
-        // Note: renderUserList is called from setupFirestoreListeners for real-time updates.
-        // It's removed here to avoid duplication as onSnapshot handles it.
-
         createUserForm.addEventListener('submit', async e => {
             e.preventDefault();
             const nameInput = document.getElementById('new-user-name');
@@ -217,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.dataset.id = task.id;
             const canDelete = state.currentUser && state.currentUser.roleLevel >= ROLES["Discord Manager"];
             li.innerHTML = `<div><h4>${task.title}</h4><p>${task.description || ''}</p></div>
-                             ${canDelete ? `<div class="task-actions"><button class="delete-btn" title="حذف">🗑️</button></div>` : ''}`;
+                            ${canDelete ? `<div class="task-actions"><button class="delete-btn" title="حذف">🗑️</button></div>` : ''}`;
             taskList.appendChild(li);
         });
 
@@ -245,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.className = 'notification-item';
             const canDelete = state.currentUser && state.currentUser.roleLevel >= ROLES["Discord Manager"];
             li.innerHTML = `<div><p>${notif.message}</p><small>بواسطة: ${notif.author}</small></div>
-                             ${canDelete ? `<div class="notification-actions"><button class="delete-btn" data-id="${notif.id}">🗑️</button></div>` : ''}`;
+                            ${canDelete ? `<div class="notification-actions"><button class="delete-btn" data-id="${notif.id}">🗑️</button></div>` : ''}`;
             notifList.appendChild(li);
         });
 
@@ -300,36 +291,77 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // مثال لإضافة مهام وإشعارات (افترض وجود فورم في الـ HTML)
-        const addTaskForm = document.getElementById('add-task-form');
-        if (addTaskForm) {
-            addTaskForm.addEventListener('submit', async (e) => {
+        // تم نقل الـ forms المتعلقة بالـ tasks و notifications و clear data إلى هذا الجزء، 
+        // وتأكد من وجود الـ IDs الصحيحة في الـ HTML
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskModal = document.getElementById('taskModal');
+        const taskForm = document.getElementById('task-form');
+        const closeTaskModalBtn = taskModal?.querySelector('.close-btn');
+
+        if (addTaskBtn) {
+            addTaskBtn.addEventListener('click', () => {
+                taskModal.style.display = 'block';
+                document.getElementById('modal-title').textContent = 'إضافة مهمة';
+                taskForm.reset();
+                document.getElementById('task-id').value = ''; // تأكد من تفريغ الـ ID للمهمة الجديدة
+            });
+        }
+        
+        if (closeTaskModalBtn) {
+            closeTaskModalBtn.addEventListener('click', () => {
+                taskModal.style.display = 'none';
+            });
+        }
+
+        if (taskForm) {
+            taskForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const taskId = document.getElementById('task-id').value;
                 const title = document.getElementById('task-title').value.trim();
-                const description = document.getElementById('task-description').value.trim();
-                if (title) {
-                    try {
+                const description = document.getElementById('task-desc').value.trim();
+                const priority = document.getElementById('task-priority').value;
+
+                if (!title) {
+                    alert('عنوان المهمة مطلوب.');
+                    return;
+                }
+
+                try {
+                    if (taskId) {
+                        // تحديث مهمة موجودة (إذا كانت الوظيفة دي موجودة عندك)
+                        await updateDoc(doc(db, "tasks", taskId), {
+                            title,
+                            description,
+                            priority
+                        });
+                        await logAction(`حدّث مهمة: ${title}`);
+                    } else {
+                        // إضافة مهمة جديدة
                         await addDoc(collection(db, "tasks"), {
                             title,
                             description,
+                            priority,
                             createdAt: new Date().toISOString(),
                             author: state.currentUser ? state.currentUser.name : 'Unknown'
                         });
                         await logAction(`أضاف مهمة جديدة: ${title}`);
-                        addTaskForm.reset();
-                    } catch (e) {
-                        console.error("Error adding task:", e);
-                        alert("حدث خطأ عند إضافة المهمة.");
                     }
+                    taskModal.style.display = 'none';
+                    taskForm.reset();
+                } catch (e) {
+                    console.error("Error saving task:", e);
+                    alert("حدث خطأ عند حفظ المهمة.");
                 }
             });
         }
 
-        const sendNotificationForm = document.getElementById('send-notification-form');
-        if (sendNotificationForm) {
-            sendNotificationForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const message = document.getElementById('notification-message').value.trim();
+        const sendNotificationBtn = document.getElementById('send-notification-btn');
+        const notificationInput = document.getElementById('notification-input');
+        const notificationSound = document.getElementById('notification-sound');
+
+        if (sendNotificationBtn && notificationInput) {
+            sendNotificationBtn.addEventListener('click', async () => {
+                const message = notificationInput.value.trim();
                 if (message) {
                     try {
                         await addDoc(collection(db, "notifications"), {
@@ -338,16 +370,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             author: state.currentUser ? state.currentUser.name : 'Unknown'
                         });
                         await logAction(`أرسل إشعار جديد`);
-                        sendNotificationForm.reset();
+                        notificationInput.value = ''; // مسح حقل الإدخال
+                        if (notificationSound) {
+                            notificationSound.play(); // تشغيل صوت التنبيه
+                        }
                     } catch (e) {
                         console.error("Error sending notification:", e);
                         alert("حدث خطأ عند إرسال الإشعار.");
                     }
+                } else {
+                    alert('الرجاء كتابة رسالة التنبيه.');
                 }
             });
         }
 
-        const clearDataBtn = document.getElementById('clear-all-data-btn');
+        const clearDataBtn = document.getElementById('clear-data-btn'); // تم تغيير الـ ID هنا ليتناسب مع الـ HTML
         if (clearDataBtn) {
             clearDataBtn.addEventListener('click', async () => {
                 if (state.currentUser && state.currentUser.roleLevel >= ROLES["Discord Manager"]) {
@@ -447,6 +484,20 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.nav-item.active')?.classList.remove('active');
         }
     };
+
+    // --- تحديث الساعة ---
+    function updateClock() {
+        const clockElement = document.getElementById('clock');
+        if (clockElement) {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            clockElement.textContent = now.toLocaleTimeString('ar-EG', options);
+        }
+    }
+    // تحديث الساعة كل ثانية
+    setInterval(updateClock, 1000);
+    updateClock(); // استدعاء فوري لعرض الوقت عند التحميل
+
 
     init();
 });
