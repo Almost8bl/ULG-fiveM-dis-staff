@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YALG Server | تسجيل الدخول</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="background-container">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>العودة للرئيسية</span>
+        </a>
+
+        <div class="login-container">
+            <div class="login-header">
+                <img src="https://i.imgur.com/your-yalg-logo.png" alt="YALG Logo" class="logo-placeholder">
+                <h1>تسجيل الدخول</h1>
+                <p>لوحة تحكم سيرفر YALG</p>
+            </div>
+
+            <form id="login-form" novalidate>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="اسم المستخدم" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="كلمة المرور" required>
+                </div>
+
+                <p id="error-message" class="error-message"></p>
+
+                <button type="submit" class="login-btn">تسجيل الدخول</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
