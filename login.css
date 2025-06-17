@@ -1,208 +1,118 @@
-/* --- Global Styles & Resets --- */
-:root {
-    --deep-blue-start: #1c2541;
-    --deep-blue-end: #0b132b;
-    --card-bg: #1d2d44;
-    --input-bg: #0b132b;
-    --primary-accent: #3a506b;
-    --text-primary: #f0f8ff; /* AliceBlue */
-    --text-secondary: #a9b4c2;
-    --error-color: #e74c3c;
-    --success-glow: #2ecc71;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body, html {
-    height: 100%;
-}
-
 body {
-    font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
-    overflow: hidden; /* يمنع ظهور شريط التمرير */
-}
-
-/* --- Main Layout & Background --- */
-.background-container {
-    height: 100vh;
-    background: linear-gradient(135deg, var(--deep-blue-start), var(--deep-blue-end));
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    position: relative;
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* --- Back Button --- */
-.back-button {
+.background {
     position: absolute;
-    top: 25px;
-    right: 25px; /* تم وضعه يميناً ليناسب التنسيق العربي */
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.back-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
-}
-
-/* --- Login Card --- */
-.login-container {
-    background-color: var(--card-bg);
-    padding: 40px 50px;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 420px;
+    height: 100%;
+    background-image: url('https://i.pinimg.com/originals/e1/23/23/e123232ab190184131515d186c353956.jpg'); /* يمكنك تغيير الخلفية من هنا */
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    width: 350px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    animation: fadeIn 0.8s ease-out;
+    color: white;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.login-header .logo-placeholder {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 15px;
-    border-radius: 50%;
-    /* يمكنك إضافة تأثير بسيط هنا */
-    border: 2px solid var(--primary-accent);
-}
-
-.login-header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.login-header p {
-    color: var(--text-secondary);
+h2 {
     margin-bottom: 30px;
-    font-size: 16px;
-}
-
-/* --- Form Elements --- */
-#login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    font-size: 2.5em;
+    font-weight: 600;
 }
 
 .input-group {
     position: relative;
-}
-
-.input-group i {
-    position: absolute;
-    top: 50%;
-    right: 15px; /* تم تعديله ليناسب التنسيق العربي */
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+    margin-bottom: 35px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 14px 45px 14px 20px; /* تعديل الحشو ليناسب الأيقونة يميناً */
-    background-color: var(--input-bg);
-    border: 1px solid var(--primary-accent);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.input-group input::placeholder {
-    color: var(--text-secondary);
-}
-
-.input-group input:focus {
-    border-color: var(--text-primary);
-    box-shadow: 0 0 10px rgba(58, 80, 107, 0.5);
-}
-
-.input-group input:focus + i {
-    color: var(--text-primary);
-}
-
-/* --- Error Message --- */
-.error-message {
-    color: var(--error-color);
-    font-weight: 500;
-    min-height: 24px; /* حجز مساحة لمنع اهتزاز التصميم */
-    font-size: 14px;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.error-message.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* --- Login Button --- */
-.login-btn {
-    padding: 15px;
-    background: linear-gradient(90deg, #3a506b, #2c3e50);
+    padding: 10px 0;
+    background: transparent;
     border: none;
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 18px;
-    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    font-size: 1.1em;
+    outline: none;
+}
+
+.input-group label {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1em;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus + label,
+.input-group input:valid + label {
+    top: -15px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 0.9em;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
-    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.login-btn:hover {
-    box-shadow: 0 5px 15px rgba(58, 80, 107, 0.4);
-    transform: translateY(-2px);
-    background: linear-gradient(90deg, #4a6582, #3c5168);
+.remember-me input {
+    margin-left: 8px;
 }
 
-.login-btn:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 5px rgba(58, 80, 107, 0.4);
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-/* --- Responsive Design --- */
-@media (max-width: 500px) {
-    .login-container {
-        padding: 30px 25px;
-        width: 90%;
-    }
+button:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.02);
+}
 
-    .login-header h1 {
-        font-size: 24px;
-    }
-    
-    .back-button {
-        top: 15px;
-        right: 15px;
-    }
+.error-message {
+    color: #ff4d4d;
+    margin-top: 15px;
+    height: 20px;
+    font-weight: bold;
 }
