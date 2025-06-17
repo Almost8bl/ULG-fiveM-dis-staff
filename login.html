@@ -4,18 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول</title>
-    <link rel="stylesheet" href="login.css">
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <style>
+        /* === CSS STYLES === */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #1a1a1a; /* لون احتياطي في حال لم تحمل الصورة */
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* استخدمت صورة عالية الجودة ومناسبة للتصميم */
+            background-image: url('https://images.unsplash.com/photo-1554141322-2096219428b7?q=80&w=2574&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px); /* زيادة التغبيش للتركيز على النموذج */
+            transform: scale(1.1); /* لتجنب الحواف الفارغة بسبب التغبيش */
+            z-index: -1;
+        }
+
+        .login-container {
+            background: rgba(10, 10, 10, 0.4); /* لون زجاجي أغمق لتباين أفضل */
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            width: 380px;
+            text-align: center;
+            color: white;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .input-group input {
+            width: 100%;
+            box-sizing: border-box; /* يضمن عدم خروج الحقل عن الإطار */
+            padding: 10px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            font-size: 1.1em;
+            outline: none;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1em;
+            pointer-events: none;
+            transition: 0.3s all ease;
+        }
+        
+        /* حركة عنوان الحقل عند التركيز أو الكتابة */
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -15px;
+            font-size: 0.9em;
+            color: #fff;
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .remember-me input {
+            margin-left: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #ffcccc;
+            margin-top: 15px;
+            height: 20px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+    </style>
 </head>
 <body>
+    
     <div class="background"></div>
+    
     <div class="login-container">
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
             <h2>تسجيل الدخول</h2>
             <div class="input-group">
-                <input type="text" id="username" name="username" required autocomplete="username">
-                <label for="username">اسم المستخدم</label>
+                <input type="email" id="email" name="email" required autocomplete="email">
+                <label for="email">البريد الإلكتروني</label>
             </div>
             <div class="input-group">
                 <input type="password" id="password" name="password" required autocomplete="current-password">
@@ -26,11 +169,110 @@
                     <input type="checkbox" name="remember"> تذكرني
                 </label>
             </div>
-            <button type="submit">دخول</button>
-            <p id="error-message" class="error-message"></p>
+            <button type="submit" id="loginButton">دخول</button>
+            <p id="errorMessage" class="error-message"></p>
         </form>
     </div>
 
-    <script src="login.js"></script>
+    <script>
+        // === JAVASCRIPT LOGIC ===
+
+        // --- الخطوة 1: إعدادات الربط مع Firebase ---
+        // !!! هام جدًا: استبدل القيم التالية بالقيم الخاصة بمشروعك على Firebase
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_AUTH_DOMAIN",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_STORAGE_BUCKET",
+          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+
+        // تهيئة Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) {
+            console.error("Firebase has already been initialized.");
+        }
+        
+        const auth = firebase.auth();
+
+        // --- الخطوة 2: تحديد عناصر الصفحة ---
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('loginButton');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // --- الخطوة 3: نظام الأمان ومنع الاختراق ---
+        /**
+         * دالة لتنقية المدخلات لمنع هجمات XSS.
+         * هذه الدالة تحول النص إلى نص آمن لا يمكن للمتصفح تفسيره كـ HTML.
+         * @param {string} str - النص المدخل من المستخدم.
+         * @returns {string} - النص الآمن.
+         */
+        function sanitizeInput(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+        
+        // --- الخطوة 4: التعامل مع عملية تسجيل الدخول ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // منع التحديث التلقائي للصفحة
+
+            // تعطيل الزر وإظهار رسالة انتظار
+            loginButton.disabled = true;
+            loginButton.textContent = 'جار التحقق...';
+            errorMessage.textContent = '';
+
+            // الحصول على البيانات وتنظيفها
+            const email = sanitizeInput(emailInput.value);
+            const password = passwordInput.value; // لا داعي لتنقية كلمة المرور لأن Firebase يعالجها
+
+            // التحقق المبدئي من البيانات
+            if (!email || !password) {
+                errorMessage.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور.';
+                loginButton.disabled = false;
+                loginButton.textContent = 'دخول';
+                return;
+            }
+
+            // --- الخطوة 5: تسجيل الدخول عبر Firebase ومنح الوصول ---
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // تم تسجيل الدخول بنجاح
+                    console.log('تم تسجيل الدخول بنجاح:', userCredential.user);
+                    
+                    // ==========================================================
+                    // >> منح الوصول للصفحة الرئيسية <<
+                    // بعد نجاح الدخول، يتم توجيه المستخدم لصفحة أخرى (home.html)
+                    // ==========================================================
+                    alert('تم تسجيل الدخول بنجاح! سيتم توجيهك الآن...');
+                    window.location.assign('home.html'); // <-- قم بإنشاء هذه الصفحة
+
+                })
+                .catch((error) => {
+                    // فشل تسجيل الدخول - عرض رسالة خطأ آمنة
+                    console.error('فشل تسجيل الدخول:', error.code, error.message);
+                    
+                    let friendlyMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                    if (error.code === 'auth/invalid-email') {
+                        friendlyMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                    } else if (error.code === 'auth/too-many-requests') {
+                        friendlyMessage = 'تم حظر هذا الحساب مؤقتًا بسبب كثرة المحاولات.';
+                    }
+                    
+                    errorMessage.textContent = friendlyMessage;
+
+                })
+                .finally(() => {
+                    // إعادة تفعيل الزر في كل الحالات (نجاح أو فشل)
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'دخول';
+                });
+        });
+    </script>
+
 </body>
 </html>
