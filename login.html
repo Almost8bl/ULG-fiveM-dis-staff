@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول</title>
+    <title>تسجيل الدخول - تصميم جديد</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
     <style>
         /* === CSS STYLES === */
         body, html {
@@ -27,93 +28,145 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* استخدمت صورة عالية الجودة ومناسبة للتصميم */
-            background-image: url('20220506_141422_0000-1.jpg');
+            /* يمكنك استبدال هذه الصورة بصورة أخرى أو استخدام تدرج لوني */
+            background-image: url('https://source.unsplash.com/random/1920x1080?abstract'); 
             background-size: cover;
             background-position: center;
-            filter: blur(8px); /* زيادة التغبيش للتركيز على النموذج */
-            transform: scale(1.1); /* لتجنب الحواف الفارغة بسبب التغبيش */
+            filter: blur(6px); /* تغبيش أقل ليكون الخلفية أوضح قليلاً */
+            transform: scale(1.05); /* لتجنب الحواف الفارغة */
             z-index: -1;
+            animation: backgroundZoom 20s infinite alternate; /* حركة خفيفة للخلفية */
+        }
+
+        @keyframes backgroundZoom {
+            from { transform: scale(1.05) blur(6px); }
+            to { transform: scale(1.1) blur(7px); }
         }
 
         .login-container {
-            /* هنا تم تعديل الخلفية لجعلها شفافة تمامًا */
-            background: rgba(10, 10, 10, 0); /* تم تغيير 0.4 إلى 0 لشفافية كاملة */
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            width: 380px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); /* تدرج لوني شفاف */
+            backdrop-filter: blur(20px); /* زيادة التغبيش للوحة */
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px; /* زوايا أكثر استدارة */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* حدود أفتح وأكثر وضوحاً */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* ظل أقوى وأكثر انتشاراً */
+            padding: 50px; /* زيادة المساحة الداخلية */
+            width: 350px; /* عرض مناسب */
             text-align: center;
-            color: white;
-            animation: fadeIn 0.8s ease-in-out;
+            color: #e0e0e0; /* لون نص فاتح قليلاً */
+            animation: slideIn 0.8s ease-out;
+            position: relative;
+            overflow: hidden; /* لإخفاء أي عناصر تتجاوز الحدود */
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            font-weight: 600;
+            margin-bottom: 40px; /* مسافة أكبر */
+            font-size: 2.8em; /* حجم أكبر للعنوان */
+            font-weight: 700;
+            color: #ffffff; /* لون أبيض نقي للعنوان */
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .input-group {
             position: relative;
-            margin-bottom: 35px;
+            margin-bottom: 30px; /* مسافة أقل بين الحقول */
         }
 
         .input-group input {
-            width: 100%;
-            box-sizing: border-box; /* يضمن عدم خروج الحقل عن الإطار */
-            padding: 10px 0;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-            color: white;
+            width: calc(100% - 20px); /* عرض الحقل مع مراعاة البادينغ */
+            padding: 12px 10px;
+            background: rgba(255, 255, 255, 0.1); /* خلفية خفيفة للحقول */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* حدود للحقول */
+            border-radius: 8px; /* زوايا مستديرة للحقول */
+            color: #ffffff;
             font-size: 1.1em;
             outline: none;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #8cafff; /* لون مميز عند التركيز */
+            background-color: rgba(255, 255, 255, 0.15);
         }
 
         .input-group label {
             position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.7);
+            top: 12px; /* ضبط الموضع الأولي للعنوان */
+            right: 10px;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 1.1em;
             pointer-events: none;
             transition: 0.3s all ease;
         }
         
-        /* حركة عنوان الحقل عند التركيز أو الكتابة */
         .input-group input:focus + label,
         .input-group input:valid + label {
-            top: -15px;
-            font-size: 0.9em;
-            color: #fff;
+            top: -20px; /* تحريك العنوان للأعلى عند التركيز/الكتابة */
+            font-size: 0.85em;
+            color: #a0c4ff; /* لون مميز للعنوان المتحرك */
+            background-color: rgba(0, 0, 0, 0.2); /* خلفية خفيفة للعنوان */
+            padding: 2px 8px;
+            border-radius: 5px;
         }
 
         .options {
             display: flex;
+            justify-content: space-between; /* توزيع العناصر بالتساوي */
             align-items: center;
-            margin-bottom: 25px;
-            font-size: 0.9em;
+            margin-bottom: 30px;
+            font-size: 0.95em;
         }
 
         .remember-me {
             display: flex;
             align-items: center;
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .remember-me input {
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
             margin-left: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .remember-me input[type="checkbox"]:checked {
+            background-color: #8cafff;
+            border-color: #8cafff;
+        }
+
+        .remember-me input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #1a1a1a;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .forgot-password {
+            color: #a0c4ff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #ffffff;
+            text-decoration: underline;
         }
 
         button {
@@ -121,34 +174,59 @@
             padding: 15px;
             border: none;
             border-radius: 10px;
-            background-color: #ffffff;
+            background: linear-gradient(90deg, #8cafff, #a0c4ff); /* تدرج لوني للزر */
             color: #1a1a1a;
-            font-size: 1.2em;
+            font-size: 1.3em; /* حجم أكبر للزر */
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
-            background-color: #e0e0e0;
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px); /* رفع الزر قليلاً */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(90deg, #a0c4ff, #8cafff); /* عكس التدرج عند التحويم */
         }
         
         button:disabled {
-            background-color: #cccccc;
+            background: #cccccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #666;
         }
 
         .error-message {
-            color: #ffcccc;
-            margin-top: 15px;
-            height: 20px;
+            color: #ff6b6b; /* لون أحمر أكثر وضوحاً للأخطاء */
+            margin-top: 20px; /* مسافة أكبر */
+            height: 25px; /* ارتفاع أكبر للرسالة */
             font-weight: bold;
-            transition: opacity 0.3s;
+            opacity: 0; /* إخفاء مبدئي */
+            transition: opacity 0.3s ease;
+        }
+        .error-message.show {
+            opacity: 1; /* إظهار الرسالة */
+        }
+
+        .register-link {
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1em;
+        }
+
+        .register-link a {
+            color: #a0c4ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #ffffff;
+            text-decoration: underline;
         }
     </style>
-
 </head>
 <body>
     
@@ -169,10 +247,14 @@
                 <label class="remember-me">
                     <input type="checkbox" name="remember"> تذكرني
                 </label>
+                <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
             </div>
             <button type="submit" id="loginButton">دخول</button>
             <p id="errorMessage" class="error-message"></p>
         </form>
+        <p class="register-link">
+            ليس لديك حساب؟ <a href="#">سجل الآن</a>
+        </p>
     </div>
 
     <script>
@@ -219,59 +301,62 @@
         }
         
         // --- الخطوة 4: التعامل مع عملية تسجيل الدخول ---
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => { // استخدام async
             e.preventDefault(); // منع التحديث التلقائي للصفحة
 
             // تعطيل الزر وإظهار رسالة انتظار
             loginButton.disabled = true;
             loginButton.textContent = 'جار التحقق...';
-            errorMessage.textContent = '';
+            errorMessage.textContent = ''; // مسح أي رسالة سابقة
+            errorMessage.classList.remove('show'); // إخفاء الرسالة بصرياً
 
             // الحصول على البيانات وتنظيفها
             const email = sanitizeInput(emailInput.value);
-            const password = passwordInput.value; // لا داعي لتنقية كلمة المرور لأن Firebase يعالجها
+            const password = passwordInput.value; 
 
             // التحقق المبدئي من البيانات
             if (!email || !password) {
                 errorMessage.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور.';
+                errorMessage.classList.add('show');
                 loginButton.disabled = false;
                 loginButton.textContent = 'دخول';
                 return;
             }
 
             // --- الخطوة 5: تسجيل الدخول عبر Firebase ومنح الوصول ---
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // تم تسجيل الدخول بنجاح
-                    console.log('تم تسجيل الدخول بنجاح:', userCredential.user);
-                    
-                    // ==========================================================
-                    // >> منح الوصول للصفحة الرئيسية <<
-                    // بعد نجاح الدخول، يتم توجيه المستخدم لصفحة أخرى (home.html)
-                    // ==========================================================
-                    alert('تم تسجيل الدخول بنجاح! سيتم توجيهك الآن...');
-                    window.location.assign('home.html'); // <-- قم بإنشاء هذه الصفحة
-
-                })
-                .catch((error) => {
-                    // فشل تسجيل الدخول - عرض رسالة خطأ آمنة
-                    console.error('فشل تسجيل الدخول:', error.code, error.message);
-                    
-                    let friendlyMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
-                    if (error.code === 'auth/invalid-email') {
-                        friendlyMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
-                    } else if (error.code === 'auth/too-many-requests') {
-                        friendlyMessage = 'تم حظر هذا الحساب مؤقتًا بسبب كثرة المحاولات.';
-                    }
-                    
-                    errorMessage.textContent = friendlyMessage;
-
-                })
-                .finally(() => {
-                    // إعادة تفعيل الزر في كل الحالات (نجاح أو فشل)
-                    loginButton.disabled = false;
-                    loginButton.textContent = 'دخول';
-                });
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // تم تسجيل الدخول بنجاح
+                console.log('تم تسجيل الدخول بنجاح:', userCredential.user);
+                
+                // ==========================================================
+                // >> منح الوصول للصفحة الرئيسية <<
+                // بعد نجاح الدخول، يتم توجيه المستخدم لصفحة أخرى (home.html)
+                // ==========================================================
+                alert('تم تسجيل الدخول بنجاح! سيتم توجيهك الآن...');
+                window.location.assign('home.html'); // <-- قم بإنشاء هذه الصفحة
+            } catch (error) {
+                // فشل تسجيل الدخول - عرض رسالة خطأ آمنة
+                console.error('فشل تسجيل الدخول:', error.code, error.message);
+                
+                let friendlyMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                if (error.code === 'auth/invalid-email') {
+                    friendlyMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    friendlyMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    friendlyMessage = 'تم حظر هذا الحساب مؤقتًا بسبب كثرة المحاولات. حاول لاحقًا.';
+                } else if (error.code === 'auth/network-request-failed') {
+                    friendlyMessage = 'مشكلة في الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت.';
+                }
+                
+                errorMessage.textContent = friendlyMessage;
+                errorMessage.classList.add('show'); // إظهار رسالة الخطأ
+            } finally {
+                // إعادة تفعيل الزر في كل الحالات (نجاح أو فشل)
+                loginButton.disabled = false;
+                loginButton.textContent = 'دخول';
+            }
         });
     </script>
 
